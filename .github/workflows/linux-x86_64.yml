@@ -186,11 +186,3 @@ jobs:
           retention-days: 7
           path: ./bin/nginx
 
-      - name: gh release
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
-        #        if ${{ !startsWith(github.ref, 'refs/tags/v') }}
-        with:
-          files: ${{ env.APP_NAME }}-${{ env.APP_VERSION }}-linux-x64.tar.xz
-
-

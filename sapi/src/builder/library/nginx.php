@@ -79,6 +79,13 @@ EOF
             set -x
             patch -p1 < {$builderDir}/ngx_http_proxy_connect_module/patch/proxy_connect_rewrite_102101.patch
 
+            # nginx >= 1.29 changed ngx_http_validate_host signature to:
+            # ngx_http_validate_host(host, &port, pool, alloc)
+            # proxy_connect patch still injects old 3-arg call, fix it in-place.
+            if grep -q 'ngx_http_validate_host(ngx_str_t \*host, in_port_t \*port' src/http/ngx_http.h; then
+                perl -0pi -e 's/ngx_http_validate_host\(&host,\s*r->pool,\s*0\)/ngx_http_validate_host\(&host, \&port, r->pool, 0\)/g' src/http/ngx_http_request.c
+            fi
+
             cp -f auto/configure configure
 
             ./configure --help
